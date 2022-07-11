@@ -21,10 +21,38 @@ app.get("/", function (req, res) {
 
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
-  res.json({greeting: 'hello API'});
+  res.json({greeting: 'hello api'});
 });
 
+app.get("/api", function(req, res) {
+  res.json({
+    unix: (new Date()).getTime(),
+    utc: (new Date()).toGMTString()
+  });
+})
 
+app.get("/api/:date", function(req, res) {
+  const date = req.params.date;
+  let unix, utc;
+
+  if ((new Date(parseInt(date))).toString() === "Invalid Date") {
+    res.json({error : "Invalid Date"});
+    return;
+  }
+
+  if((new Date(parseInt(date))).getTime() === parseInt(date) && date.indexOf("-") === -1 && date.indexOf(" ") === -1) {
+    console.log(date, 'IN MS');
+    unix = parseInt(date);
+    utc = (new Date(parseInt(date))).toGMTString();
+  } else {
+  console.log(date, 'NOT IN MS');
+  unix = (new Date(date)).getTime()
+  utc =  (new Date(parseInt(unix))).toGMTString();
+
+  }
+  res.json({ unix, utc });
+
+})
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
